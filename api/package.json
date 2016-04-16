@@ -1,0 +1,15 @@
+{
+  "name": "demo_api",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.12.3",
+    "google-libphonenumber": "^1.0.17",
+    "ipware": "0.0.8",
+    "mongoose": "^4.1",
+    "valid-url": "^1.0.9",
+    "validator": "^5.2.0"
+  },
+  "devDependencies": {
+    "jshint": "^2.8.0"
+  }
+}

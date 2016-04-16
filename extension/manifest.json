@@ -1,0 +1,22 @@
+{
+	"name": "First Extension",
+	"description": "Extract international phones and host locations",
+	"manifest_version": 2,
+	"version": "0.0.1",
+	"icons": {
+		"16"  : "assets/icon_16.png",
+    "48"  : "assets/icon_48.png",
+    "128" : "assets/icon_128.png"
+	},
+	"background": {
+		"scripts": ["scripts.js"]
+	},
+	"browser_action": {
+		"default_icon": "assets/icon_16.png",
+    "default_title": "Get Info"
+	},
+	"permissions": [
+    	"contextMenus",
+			"http://localhost:3000/*"
+	]
+}
