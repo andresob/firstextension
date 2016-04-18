@@ -1,51 +1,55 @@
-var Item   = require('../models/item');
-var validator = require('validator');
-var dns = require('dns');
-var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
-        , PNF = require('google-libphonenumber').PhoneNumberFormat;
+var Item             = require('../models/item');
 var callingCountries = require('country-data').callingCountries;
-var lookup = require('country-data').lookup;
-/*
-  Method: GET
+var dns              = require('dns');
+var validator        = require('validator');
+var lookup           = require('country-data').lookup;
+var phoneUtil        = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+PNF                  = require('google-libphonenumber').PhoneNumberFormat;
 
-  Returns:
-    If item is going to be saved or not
-*/
+
 module.exports.check = function (req, res) {
 
   var data = {};
   var query = req.query.q;
+
+  //verify if selection is a valid URL
   if (validator.isURL(query)) {
-    console.log('faca requisicao');
-    dns.resolve(query, (err, addresses) => {
-      console.log('addresses:', addresses);
-      data = {url: query, ip_address: addresses};
-    });
-  }
-  else if (validator.isNumeric(query.replace(/\D/g,''))) {
-    var tel = phoneUtil.parse('+' + query.replace(/\D/g,''));
-    var code = phoneUtil.format(tel, PNF.INTERNATIONAL).split(' ')[0];
-    var country_name = lookup.countries({countryCallingCodes: code});
-    console.log(country_name);
-    console.log(code);
-    data = {phone: phoneUtil.format(tel, PNF.INTERNATIONAL), country_name: country_name};
-  }
-  else {
-    console.log('do nothing');
+
+      dns.resolve(query, (err, addresses) => {
+          data = {url: query, ip_address: addresses};
+      });
+
+      //save item to database
+      var item = new Item(data);
+      item.save();
   }
 
-  // var item = new Item(data);
-  // item.save();
+  //verify if selection is a valid international phone number
+  else if (validator.isNumeric(query.replace(/\D/g,''))) {
+
+      var names = [];
+      var phone_number = phoneUtil.parse('+' + query.replace(/\D/g,''));
+      var calling_code = phoneUtil.format(phone_number, PNF.INTERNATIONAL).split(' ')[0];
+      var selected_countries = lookup.countries({countryCallingCodes: calling_code});
+
+      //more then one contry can use the same calling code
+      for (var i = 0; i < selected_countries.length; i++) {
+          names.push(selected_countries[i].name);
+      }
+
+      data = {phone: phoneUtil.format(phone_number, PNF.INTERNATIONAL), contries_name: names};
+
+      //save item to database
+      var item = new Item(data);
+      item.save();
+  }
+
+  //if string doesn't match just return
+  res.send();
 
 };
 
 
-/*
-  Method: GET
-
-  Returns:
-    If item is going to be saved or not
-*/
 module.exports.list = function (req, res) {
   res.send('history page!');
   Item.find();

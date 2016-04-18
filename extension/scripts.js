@@ -1,9 +1,9 @@
 function checkInfoType(info) {
 
     var http = new XMLHttpRequest();
-    var url = "http://localhost:3000/check-info";
+    var url = "http://localhost:3000/simple-api/v1/check-info?q=";
     var params = info.selectionText;
-    http.open("POST", url, true);
+    http.open("GET", url+params, true);
 
     //Send the proper header information along with the request
     http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -13,7 +13,9 @@ function checkInfoType(info) {
             alert(http.responseText);
         }
     }
-    http.send(params);
+
+    http.send();
+
 }
 
 chrome.contextMenus.create({
