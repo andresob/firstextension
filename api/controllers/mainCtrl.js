@@ -1,4 +1,5 @@
-var Item             = require('../models/item');
+var Address          = require('../models/url');
+var Phone            = require('../models/phones');
 var callingCountries = require('country-data').callingCountries;
 var dns              = require('dns');
 var validator        = require('validator');
@@ -14,10 +15,10 @@ module.exports.check = function (req, res) {
   //verify if selection is a valid URL
   if (validator.isURL(query)) {
 
-      dns.resolve(query, (err, addresses) => {
+      dns.resolve(query, function(err, addresses) {
 		      //save item to database
-      	  var item = new Item({url: query, ip_address: addresses});
-      	  item.save();
+      	  var address = new Address({url: query, ip_address: addresses});
+      	  Address.save();
       });
 
   }
@@ -25,19 +26,24 @@ module.exports.check = function (req, res) {
   //verify if selection is a valid international phone number
   else if (validator.isNumeric(query.replace(/\D/g,''))) {
 
-      var names = [];
       var phone_number = phoneUtil.parse('+' + query.replace(/\D/g,''));
-      var calling_code = phoneUtil.format(phone_number, PNF.INTERNATIONAL).split(' ')[0];
-      var selected_countries = lookup.countries({countryCallingCodes: calling_code});
+      if (phoneUtil.isValidNumber(phone_number)) {
 
-      //more then one contry can use the same calling code
-      for (var i = 0; i < selected_countries.length; i++) {
-          names.push(selected_countries[i].name);
+        var names = [];
+        var calling_code = phoneUtil.format(phone_number, PNF.INTERNATIONAL).split(' ')[0];
+        var selected_countries = lookup.countries({countryCallingCodes: calling_code});
+
+        //more then one contry can use the same calling code
+        for (var i = 0; i < selected_countries.length; i++) {
+            names.push(selected_countries[i].name);
+        }
+
+        //save item to database
+        var phone = new Phone({phone: phoneUtil.format(phone_number, PNF.INTERNATIONAL), contries_name: names});
+        Phone.save();
+
       }
 
-      //save item to database
-      var item = new Item({phone: phoneUtil.format(phone_number, PNF.INTERNATIONAL), contries_name: names});
-      item.save();
   }
 
   //if string doesn't match just return
@@ -48,5 +54,4 @@ module.exports.check = function (req, res) {
 
 module.exports.list = function (req, res) {
   res.send('history page!');
-  Item.find();
 };

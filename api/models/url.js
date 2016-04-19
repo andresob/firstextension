@@ -7,9 +7,7 @@ var schema = new Mongoose.Schema({
 	updatedAt : { type: Number },
 
   url          : { type: String },
-  ip_address   : { type: String },
-  phone        : { type: String },
-  country_name : { type: String }
+  ip_address   : { type: String }
 
 });
 
@@ -27,4 +25,4 @@ schema.pre('save', function(next) {
   next();
 });
 
-module.exports = Mongoose.model('Item', schema);
+module.exports = Mongoose.model('Address', schema);
