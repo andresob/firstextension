@@ -9,19 +9,17 @@ PNF                  = require('google-libphonenumber').PhoneNumberFormat;
 
 module.exports.check = function (req, res) {
 
-  var data = {};
   var query = req.query.q;
 
   //verify if selection is a valid URL
   if (validator.isURL(query)) {
 
       dns.resolve(query, (err, addresses) => {
-          data = {url: query, ip_address: addresses};
+		      //save item to database
+      	  var item = new Item({url: query, ip_address: addresses});
+      	  item.save();
       });
 
-      //save item to database
-      var item = new Item(data);
-      item.save();
   }
 
   //verify if selection is a valid international phone number
@@ -37,15 +35,13 @@ module.exports.check = function (req, res) {
           names.push(selected_countries[i].name);
       }
 
-      data = {phone: phoneUtil.format(phone_number, PNF.INTERNATIONAL), contries_name: names};
-
       //save item to database
-      var item = new Item(data);
+      var item = new Item({phone: phoneUtil.format(phone_number, PNF.INTERNATIONAL), contries_name: names});
       item.save();
   }
 
   //if string doesn't match just return
-  res.send();
+  res.send('ok');
 
 };
 
