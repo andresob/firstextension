@@ -46,16 +46,20 @@ module.exports.check = function (req, res) {
 
   }
 
-  //if string doesn't match just return
-  res.send('ok');
-
 };
 
 
-module.exports.list = function (req, res) {
+module.exports.phones = function (req, res) {
 
   var phones = Phone.find();
-  //var address = Address.find();
 
   res.send(phones);
+};
+
+
+module.exports.address = function (req, res) {
+
+  var address = Address.find();
+
+  res.send(address);
 };

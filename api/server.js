@@ -31,8 +31,9 @@ router.use(function(req, res, next) {
     next();
 });
 
-// home page route (http://localhost:3000)
-router.get('/history', main.list);
+// history pages
+router.get('/phones', main.phones);
+router.get('/address', main.address);
 
 // about page route (http://localhost:3000/check-info)
 router.get('/check-info', main.check);
